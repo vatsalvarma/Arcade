@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Arcade | Double Cents</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Unpkg Split-Type for text animations -->
+    <script src="https://unpkg.com/split-type"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <style>
+        :root {
+            --bg: #070707;
+            --neon: #ccff00;
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --font-h: 'Syne', sans-serif;
+            --font-p: 'Inter', sans-serif;
+            --card-bg: rgba(25, 25, 25, 0.4);
+            --card-border: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: var(--font-p);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* LENIS SMOOTH SCROLLING defaults */
+        html.lenis { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto; }
+        .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+        .lenis.lenis-stopped { overflow: hidden; }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* ==================================
+           NAVBAR
+           ================================== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 50px;
+            z-index: 100;
+            background: linear-gradient(to bottom, rgba(7,7,7,0.9), transparent);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-h);
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .logo-icon {
+            background: var(--neon);
+            color: #000;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .nav-links a {
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--neon);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .search-icon {
+            width: 24px;
+            height: 24px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.7;
+            cursor: pointer;
+        }
+
+        .btn-signin {
+            background: var(--neon);
+            color: #000;
+            padding: 8px 24px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.3s;
+        }
+
+        .btn-signin:hover {
+            transform: scale(1.05);
+        }
+
+        /* ==================================
+           HERO SECTION
+           ================================== */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            padding: 120px 50px 50px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .bg-text {
+            position: absolute;
+            top: 25%;
+            left: -5%;
+            font-family: var(--font-h);
+            font-size: 20vw;
+            line-height: 0.8;
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(255,255,255,0.03);
+            white-space: nowrap;
+            z-index: 0;
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            width: 35%;
+            padding-top: 5vh;
+        }
+
+        .hero-title {
+            font-family: var(--font-h);
+            font-size: 7rem;
+            line-height: 0.9;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .hero-title span {
+            color: var(--neon);
+            display: block;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(204, 255, 0, 0.4);
+            color: var(--neon);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+        }
+
+        .hero-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            max-width: 90%;
+            margin-bottom: 50px;
+        }
+
+        .hero-footer-text {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+            width: fit-content;
+        }
+
+        .hero-footer-text span {
+            color: var(--neon);
+        }
+
+        .hero-image-wrapper {
+            position: absolute;
+            top: 10%;
+            right: 15%;
+            width: 55%;
+            height: 75vh;
+            z-index: 1;
+            /* Using a glass/shadow wrapper */
+            box-shadow: 0 0 50px rgba(204, 255, 0, 0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            will-change: transform;
+        }
+
+        .hero-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Placeholder for the neon house */
+            background: url('https://images.unsplash.com/photo-1613490900233-141c5560d75d?q=80&w=1200') center/cover;
+            transform: scale(1.1); /* for parallax scrub */
+        }
+
+        /* Overlay to darken and add green neon tint */
+        .hero-img::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(204, 255, 0, 0.05) 100%);
+            mix-blend-mode: overlay;
+        }
+
+        .hero-stats {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            padding-top: 10vh;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-family: var(--font-h);
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-item p {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .stat-icon {
+            color: var(--neon);
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        /* ==================================
+           MIDDLE TEXT SECTION
+           ================================== */
+        .mid-section {
+            padding: 100px 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 60vh;
+        }
+
+        .scroll-text {
+            font-family: var(--font-h);
+            font-size: 2.2rem;
+            line-height: 1.4;
+            text-align: center;
+            max-width: 900px;
+            color: rgba(255,255,255,0.2); /* Base color */
+            text-transform: uppercase;
+        }
+
+        .scroll-text .line { display: block; }
+        .scroll-text .neon-word { color: var(--neon); opacity: 0.2; }
+
+
+        /* ==================================
+           SPLIT FEATURES SECTION
+           ================================== */
+        .split-section {
+            padding: 50px;
+            display: flex;
+            gap: 50px;
+            align-items: center;
+            position: relative;
+        }
+
+        .features-left {
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 25px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* Glow setup */
+            box-shadow: 0 0 0 rgba(204, 255, 0, 0);
+        }
+
+        .feature-card:hover {
+            border-color: rgba(204, 255, 0, 0.5);
+            box-shadow: 0 10px 30px rgba(204, 255, 0, 0.1);
+            transform: translateX(10px);
+        }
+
+        .fc-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .fc-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(204, 255, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--neon);
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover .fc-icon {
+            background: var(--neon);
+            color: #000;
+        }
+
+        .fc-text h4 {
+            font-family: var(--font-h);
+            font-size: 1rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .fc-text p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .fc-arrow {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            transition: transform 0.3s, color 0.3s;
+        }
+
+        .feature-card:hover .fc-arrow {
+            transform: translateX(5px);
+            color: var(--neon);
+        }
+
+        .features-right {
+            width: 60%;
+            height: 80vh;
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .sub-img {
+            width: 100%;
+            height: 120%; /* Extra height for parallax */
+            object-fit: cover;
+            background: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200') center/cover;
+            transform: translateY(-10%);
+        }
+
+        /* Overlay for sub img */
+        .sub-img::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+        }
+
+        /* ==================================
+           FOOTER
+           ================================== */
+        .footer-banner {
+            margin: 100px 50px 30px;
+            padding: 40px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Little neon accent line on top */
+        .footer-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon), transparent);
+        }
+
+        .fb-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .fb-icon {
+            color: var(--neon);
+            font-size: 2rem;
+        }
+
+        .fb-text p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            max-width: 250px;
+        }
+
+        .fb-title {
+            font-family: var(--font-h);
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            text-align: right;
+        }
+
+        .fb-title span {
+            color: var(--neon);
+        }
+
+        .btn-outline {
+            margin-top: 10px;
+            display: inline-block;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--neon);
+            color: var(--neon);
+        }
+
+        footer {
+            padding: 30px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .designer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .designer img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+
+        .footer-right {
+            display: flex;
+            gap: 30px;
+        }
+
+        .footer-right div {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="nav-container">
+        <div class="logo">
+            <div class="logo-icon">D</div>
+            <div>Double<br>Cents</div>
+        </div>
+        <div class="nav-links">
+            <a href="#" style="color:var(--neon);">HOME</a>
+            <a>&bull;</a>
+            <a href="#">PROPERTIES</a>
+            <a>&bull;</a>
+            <a href="#">BUY</a>
+            <a>&bull;</a>
+            <a href="#">RENT</a>
+            <a>&bull;</a>
+            <a href="#">FIND AGENT</a>
+            <a>&bull;</a>
+            <a href="#">CONTACT</a>
+        </div>
+        <div class="nav-actions">
+            <div class="search-icon">&#128269;</div>
+            <a href="#" class="btn-signin">&#128100; SIGN IN &rarr;</a>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="bg-text" id="bg-text">DOUBLECENTS™</div>
+
+        <div class="hero-content">
+            <div class="hero-title" id="hero-title">
+                CITY <br> <span>ARCADE</span>
+            </div>
+            <div class="hero-badge" id="hero-badge">
+                &#9734; BEST REAL ESTATE AGENCY
+            </div>
+            <p class="hero-desc" id="hero-desc">
+                Find your dream home, explore premium properties, and invest with confidence through city arcade, your trusted partner in modern real estate.
+            </p>
+            <div class="hero-footer-text" id="hero-footer">
+                FUTURE OF LIVING <br>
+                WITH <span>CITY ARCADE</span>
+            </div>
+        </div>
+
+        <div class="hero-image-wrapper">
+            <!-- Utilizing Unsplash modern house -->
+            <div class="hero-img" id="hero-img"></div>
+        </div>
+
+        <div class="hero-stats" id="hero-stats">
+            <div class="stat-item">
+                <div class="stat-icon">&#128101;</div>
+                <h3>10K</h3>
+                <p>Happy Clients</p>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">&#127968;</div>
+                <h3>5K</h3>
+                <p>Properties Sold</p>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">&#127980;</div>
+                <h3>15+</h3>
+                <p>Cities Covered</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MIDDLE SCROLL TEXT -->
+    <section class="mid-section">
+        <div class="scroll-text" id="scrub-text">
+            A MODERN REAL ESTATE PLATFORM, <br>
+            <span class="neon-word">CITY ARCADE</span> INCORPORATES <br>
+            ADVANCED DIGITAL TOOLS AND <br>
+            TRUSTED LOCAL EXPERTISE
+        </div>
+    </section>
+
+    <!-- SPLIT FEATURES -->
+    <section class="split-section">
+        <div class="features-left">
+            <div class="feature-card">
+                <div class="fc-content">
+                    <div class="fc-icon">&#128269;</div>
+                    <div class="fc-text">
+                        <h4>Instant <br> Property Search</h4>
+                        <p>Discover homes and apartments<br>with just a few clicks.</p>
+                    </div>
+                </div>
+                <div class="fc-arrow">&rarr;</div>
+            </div>
+
+            <div class="feature-card">
+                <div class="fc-content">
+                    <div class="fc-icon">&#128737;</div>
+                    <div class="fc-text">
+                        <h4>Verified <br> Pro Listings</h4>
+                        <p>100% verified and updated property<br>details.</p>
+                    </div>
+                </div>
+                <div class="fc-arrow">&rarr;</div>
+            </div>
+
+            <div class="feature-card">
+                <div class="fc-content">
+                    <div class="fc-icon">&#128200;</div>
+                    <div class="fc-text">
+                        <h4>Smart <br> Investing Insights</h4>
+                        <p>Personalized recommendations to<br>grow your wealth.</p>
+                    </div>
+                </div>
+                <div class="fc-arrow">&rarr;</div>
+            </div>
+
+            <div class="feature-card">
+                <div class="fc-content">
+                    <div class="fc-icon">&#128276;</div>
+                    <div class="fc-text">
+                        <h4>Real Time <br> Property Updates</h4>
+                        <p>Get instant alerts on new listings<br>and price changes.</p>
+                    </div>
+                </div>
+                <div class="fc-arrow">&rarr;</div>
+            </div>
+        </div>
+
+        <div class="features-right">
+            <div class="sub-img" id="sub-img"></div>
+        </div>
+    </section>
+
+    <!-- FOOTER BANNER -->
+    <div class="footer-banner">
+        <div></div> <!-- Spacer -->
+        <div class="fb-content">
+            <div class="fb-icon">&#128202;</div>
+            <div class="fb-text">
+                <p>Stay updated with property valuations & trends.</p>
+            </div>
+        </div>
+        <div>
+            <div class="fb-title">WHY <br> <span>CITYARCADE?</span></div>
+            <a href="#" class="btn-outline" style="float: right;">WHY CHOOSE US &rarr;</a>
+        </div>
+    </div>
+
+    <!-- ACTUAL FOOTER -->
+    <footer>
+        <div class="footer-left">
+            <div class="logo">
+                <div class="logo-icon" style="width:24px; height:24px; font-size:0.8rem;">D</div>
+                <div style="font-size:0.9rem;">Double<br>Cents</div>
+            </div>
+            <div class="designer">
+                DESIGNED BY <br>
+                <strong style="color:white; font-size:0.85rem;">Aiman Malik &#10004;</strong>
+                <img src="https://i.pravatar.cc/100?img=5" alt="Avatar">
+            </div>
+        </div>
+        <div class="footer-right">
+            <div>&#9993; info@doublecents.com</div>
+            <div>&#128222; +92 313 6303302</div>
+            <div>&#127760; www.doublecents.com</div>
+        </div>
+    </footer>
+
+
+    <script>
+        // Init Lenis Smooth Scroll
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+            infinite: false,
+        })
+
+        // get scroll value
+        lenis.on('scroll', (e) => {})
+
+        function raf(time) {
+            lenis.raf(time)
+            requestAnimationFrame(raf)
+        }
+        requestAnimationFrame(raf)
+
+        // Integrates Lenis with ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- GSAP ANIMATIONS ---
+
+        // 1. Initial Load Animations
+        const initTl = gsap.timeline();
+        
+        // Split text for hero title
+        const heroTitle = new SplitType('#hero-title', { types: 'lines, words, chars' });
+        
+        gsap.set('.nav-container', { y: -100, opacity: 0 });
+        gsap.set(heroTitle.chars, { y: 100, opacity: 0 });
+        gsap.set(['#hero-badge', '#hero-desc', '#hero-footer'], { opacity: 0, x: -30 });
+        gsap.set('.hero-image-wrapper', { scale: 0.8, opacity: 0, clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)' });
+        gsap.set('.stat-item', { opacity: 0, x: 50 });
+
+        initTl.to('.nav-container', { y: 0, opacity: 1, duration: 1, ease: 'power3.out' })
+              .to(heroTitle.chars, { y: 0, opacity: 1, stagger: 0.02, duration: 0.8, ease: 'back.out(1.7)' }, "-=0.5")
+              .to('.hero-image-wrapper', { scale: 1, opacity: 1, clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)', duration: 1.5, ease: 'power4.inOut' }, "-=0.6")
+              .to(['#hero-badge', '#hero-desc', '#hero-footer'], { opacity: 1, x: 0, stagger: 0.1, duration: 0.8, ease: 'power2.out' }, "-=1")
+              .to('.stat-item', { opacity: 1, x: 0, stagger: 0.1, duration: 0.8, ease: 'power2.out' }, "-=1");
+
+        // 2. Parallax Background Text (DOUBLECENTS)
+        gsap.to('#bg-text', {
+            x: -500, // moves left as you scroll down
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '.hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 1
+            }
+        });
+
+        // 3. Hero Image Parallax zoom
+        gsap.to('#hero-img', {
+            scale: 1, // scales down from 1.1 to 1
+            y: 50,    // moves down slightly
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '.hero-image-wrapper',
+                start: 'top 20%',
+                end: 'bottom top',
+                scrub: true
+            }
+        });
+
+        // 4. Middle Text Scrubbing Reveal
+        const scrubText = new SplitType('#scrub-text', { types: 'words' });
+        
+        // Base state is set in CSS (opacity 0.2). We animate to 1 class by class
+        gsap.fromTo(scrubText.words, 
+            { opacity: 0.1 },
+            {
+                opacity: 1,
+                stagger: 0.1,
+                scrollTrigger: {
+                    trigger: '.mid-section',
+                    start: 'top 70%',
+                    end: 'bottom 60%',
+                    scrub: 1,
+                }
+            }
+        );
+        
+        // 5. Feature Cards Staggered Entry
+        gsap.from('.feature-card', {
+            x: -100,
+            opacity: 0,
+            rotationY: -15, // slight 3D rotation reveal
+            stagger: 0.15,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+                trigger: '.features-left',
+                start: 'top 80%',
+            }
+        });
+
+        // 6. Secondary Image Parallax
+        gsap.to('#sub-img', {
+            y: '10%', // Animates down within its container
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '.features-right',
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: true
+            }
+        });
+        
+        // 7. Footer Banner pop in
+        gsap.from('.footer-banner', {
+            y: 50,
+            opacity: 0,
+            scale: 0.95,
+            duration: 1,
+            ease: 'back.out(1.5)',
+            scrollTrigger: {
+                trigger: '.footer-banner',
+                start: 'top 90%'
+            }
+        });
+
+    </script>
+</body>
+</html>
